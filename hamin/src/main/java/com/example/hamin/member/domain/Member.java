@@ -22,11 +22,10 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<MemberPlan> planList = new ArrayList<>();
 
-    public Member(String email, String password, String nickName, String createdAt) {
+    public Member(String email, String password, String nickName) {
         this.email = email;
         this.password = password;
         this.nickName = nickName;
-        this.createdAt = createdAt;
     }
 
     public void changeNickName(String nickName) {
