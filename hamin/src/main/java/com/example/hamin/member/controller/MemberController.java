@@ -4,9 +4,12 @@ import com.example.hamin.member.domain.Member;
 import com.example.hamin.member.domain.requestdto.ChangeNickNameDto;
 import com.example.hamin.member.domain.requestdto.LoginDto;
 import com.example.hamin.member.domain.requestdto.SignUpDto;
+import com.example.hamin.member.domain.requestdto.VerifyEmailDto;
+import com.example.hamin.member.domain.responsedto.CheckLoginDto;
 import com.example.hamin.member.domain.responsedto.MemberDetailDto;
 import com.example.hamin.member.model.service.MemberService;
 import com.example.hamin.session.ManageSession;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -15,6 +18,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @Controller
 @RequiredArgsConstructor
@@ -59,6 +65,43 @@ public class MemberController {
         MemberDetailDto memberDetailDto =
                 new MemberDetailDto(memberService.searchByEmail(request.getAttribute("user").toString()));
         return ResponseEntity.ok(memberDetailDto);
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<?> sendMail(@RequestBody VerifyEmailDto emailDto) {
+        memberService.sendEmail(emailDto.getEmail());
+        return ResponseEntity.ok("이메일 전송 완료");
+    }
+
+    @GetMapping("/checksignin")
+    public ResponseEntity<?> checkSignIn(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String sessionId = null;
+        Member logInMember = null;
+        if (cookies != null) {
+            sessionId = Arrays.stream(cookies)
+                    .filter(cookie -> "JSESSIONID".equals(cookie.getName()))
+                    .map(Cookie::getValue)
+                    .findFirst()
+                    .orElse(null);
+        }
+        if (sessionId != null) {
+            ManageSession.Session session = ManageSession.getSession(sessionId);
+            if(session != null) {
+                if(session.getCreationTime().isBefore(LocalDateTime.now())) {
+                    ManageSession.removeSession(sessionId);
+                }
+                logInMember = memberService.searchByEmail(session.getValue());
+            }
+        }
+        CheckLoginDto loginDto = null;
+        if(logInMember != null) {
+            loginDto = new CheckLoginDto(true, logInMember.getNickName(), logInMember.getEmail());
+        }
+        else {
+            loginDto = new CheckLoginDto(false, null, null);
+        }
+        return ResponseEntity.ok(loginDto);
     }
 
 }

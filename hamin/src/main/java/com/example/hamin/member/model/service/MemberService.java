@@ -9,4 +9,5 @@ public interface MemberService {
     Member signIn(LoginDto loginDto);
     void updateNickName(String email, String nickName);
     Member searchByEmail(String email);
+    void sendEmail(String email);
 }

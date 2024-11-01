@@ -16,12 +16,20 @@ public class Plan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String title;
+
+    public Plan(String title, String channelId, Integer travelDay, String startDate) {
+        this.title = title;
+        this.channelId = channelId;
+        this.travelDay = travelDay;
+        this.startDate = startDate;
+    }
     private String channelId;
     private Integer travelDay;
+    private String startDate;
     private String createdAt;
-    @OneToMany(mappedBy = "plan")
-    private List<MemberPlan> memberList = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "plan_id")
-    private List<Detail> details = new ArrayList<>();
+
+    public void insertId(Long id) {
+        this.id = id;
+    }
 }

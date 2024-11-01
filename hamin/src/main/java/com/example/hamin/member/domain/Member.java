@@ -19,8 +19,6 @@ public class Member {
     private String password;
     private String nickName;
     private String createdAt;
-    @OneToMany(mappedBy = "member")
-    private List<MemberPlan> planList = new ArrayList<>();
 
     public Member(String email, String password, String nickName) {
         this.email = email;

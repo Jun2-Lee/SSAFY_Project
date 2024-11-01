@@ -17,6 +17,6 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/**") // 로그인 확인이 필요한 경로 설정
-                .excludePathPatterns("/member/signin", "/member/signup"); // 로그인/회원가입 페이지는 제외
+                .excludePathPatterns("/member/signin", "/member/signup", "/member/verify", "/member/checksignin"); // 로그인/회원가입 페이지는 제외
     }
 }
