@@ -1,5 +1,6 @@
 package com.example.hamin.mapper;
 
+import com.example.hamin.detail.domain.Detail;
 import com.example.hamin.member.domain.Member;
 import com.example.hamin.plan.domain.Plan;
 import com.example.hamin.plan.domain.responsedto.MyPlanResponseDto;
@@ -27,6 +28,9 @@ public interface PlanMapper {
     })
     Plan findPlanById(@Param("id") Long id);
 
+    @Select("SELECT id FROM plan WHERE channel_id = #{channelId}")
+    Long findPlanByChannelId(@Param("channelId") String channelId);
+
     @Select("""
             SELECT p.*,
                    (SELECT COUNT(*)
@@ -47,6 +51,17 @@ public interface PlanMapper {
             @Result(property = "startDate", column = "start_date")
     })
     List<MyPlanResponseDto.PlanResponseDto> searchMyPlan(@Param("memberId") Long memberId);
+
+    @Insert("""
+            INSERT INTO detail (addr, day_value, order_number, name, x, y, plan_id)
+            VALUES (#{detail.addr}, #{detail.dayValue}, #{detail.orderNumber}, #{detail.name}, #{detail.x}, #{detail.y}, #{planId})
+            """)
+    void insertDetail(@Param("detail") Detail detail, @Param("planId") Long planId);
+
+    @Delete("""
+            DELETE FROM DETAIL WHERE plan_id = #{planId}
+            """)
+    void deleteDetail(@Param("planId") Long planId);
 
     @Insert("INSERT INTO member_plan (member_id, plan_id) VALUES (#{member.id}, #{plan.id})")
     void insertMemberPlan(MemberPlan memberPlan);

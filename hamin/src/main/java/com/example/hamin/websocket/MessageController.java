@@ -1,5 +1,7 @@
 package com.example.hamin.websocket;
 
+import com.example.hamin.plan.model.service.PlanService;
+import com.example.hamin.plan.model.service.PlanServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -11,7 +13,7 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 public class MessageController {
-
+    private final PlanServiceImpl planService;
     private final SimpMessageSendingOperations simpMessageSendingOperations;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -21,13 +23,19 @@ public class MessageController {
     */
     @MessageMapping("/hello")
     public void message(Message message) {
+
+        simpMessageSendingOperations.convertAndSend("/sub/channel/" + message.getChannelId(), message);
         try {
             String jsonData = message.getData();
-            Map<String, Object> dataMap = objectMapper.readValue(jsonData, Map.class);
-            System.out.println("Parsed JSON data: " + dataMap.get("content"));
+            String type = message.getType();
+            if("plan".equals(type)) {
+                planService.changeDetails(message.getChannelId(), message.getData());
+            }
+            else if("message".equals(type)) {
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        simpMessageSendingOperations.convertAndSend("/sub/channel/" + message.getChannelId(), message);
     }
 }
