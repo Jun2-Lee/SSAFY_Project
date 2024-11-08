@@ -10,4 +10,5 @@ public interface MemberService {
     void updateNickName(String email, String nickName);
     Member searchByEmail(String email);
     void sendEmail(String email);
+    void updateProfile(String email, String profile);
 }
