@@ -1,5 +1,6 @@
 package com.example.hamin.plan.model.service;
 
+import com.example.hamin.chat.domain.Chat;
 import com.example.hamin.detail.domain.Detail;
 import com.example.hamin.mail.model.service.MailService;
 import com.example.hamin.mapper.PlanMapper;
@@ -9,6 +10,8 @@ import com.example.hamin.plan.domain.requestdto.CreatePlanRequestDto;
 import com.example.hamin.plan.domain.requestdto.InviteRequestDto;
 import com.example.hamin.plan.domain.requestdto.ParticipatePlanDto;
 import com.example.hamin.plan.domain.responsedto.MyPlanResponseDto;
+import com.example.hamin.plan.domain.responsedto.PlanChatResponseDto;
+import com.example.hamin.plan.domain.responsedto.PlanDetailResponseDto;
 import com.example.hamin.relationship.MemberPlan;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -79,5 +82,28 @@ public class PlanServiceImpl implements PlanService{
             System.out.println(detail.getDayValue());
             planMapper.insertDetail(detail, planId);
         }
+    }
+
+    @Override
+    public void insertChat(String channelId, String sender, String data){
+
+        Long planId = planMapper.findPlanByChannelId(channelId);
+        Chat chat = new Chat(sender, data);
+        System.out.println(planId);
+        System.out.println(chat.getSender());
+        System.out.println(chat.getContent());
+        planMapper.insertChat(chat, planId);
+
+    }
+
+    @Override
+    public PlanChatResponseDto searchPlanChat(Long planId) {
+        List<PlanChatResponseDto.ChatDto> chats = planMapper.searchPlanChat(planId);
+        return new PlanChatResponseDto(planId, chats);
+    }
+
+    @Override
+    public PlanDetailResponseDto searchPlanDetail(Long planId) {
+        return new PlanDetailResponseDto(planId, planMapper.searchPlanDetail(planId));
     }
 }

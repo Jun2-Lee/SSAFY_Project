@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -32,8 +33,19 @@ public class MemberController {
     // join(회원가입)
     @PostMapping("/signup")
     public ResponseEntity<?> SignUp(@RequestBody SignUpDto signUpDto) {
+        if(memberService.searchByEmail(signUpDto.getEmail()) != null) {
+            return new ResponseEntity<>("이미 존재하는 이메일입니다", HttpStatus.CONFLICT);
+        }
         memberService.signUp(signUpDto);
         return new ResponseEntity<>("회원가입 성공", HttpStatus.CREATED);
+    }
+
+    @GetMapping("/checknickname")
+    public ResponseEntity<?> checkNickName(@RequestBody Map<String, Object> request) {
+        if(memberService.searchByNickName(request.get("nickName").toString())) {
+            return ResponseEntity.ok("사용 가능한 닉네임입니다");
+        }
+        return new ResponseEntity<>("이미 존재하는 닉네임입니다", HttpStatus.CONFLICT);
     }
     // login(로그인)
     @PostMapping("/signin")
@@ -94,7 +106,7 @@ public class MemberController {
                 logInMember = memberService.searchByEmail(session.getValue());
             }
         }
-        CheckLoginDto loginDto = null;
+        CheckLoginDto loginDto;
         if(logInMember != null) {
             loginDto = new CheckLoginDto(true, logInMember.getNickName(), logInMember.getEmail());
         }

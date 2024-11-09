@@ -5,15 +5,14 @@ import com.example.hamin.plan.domain.requestdto.InviteRequestDto;
 import com.example.hamin.plan.domain.requestdto.ParticipatePlanDto;
 import com.example.hamin.plan.domain.responsedto.CreatePlanResponseDto;
 import com.example.hamin.plan.domain.responsedto.MyPlanResponseDto;
+import com.example.hamin.plan.domain.responsedto.PlanChatResponseDto;
+import com.example.hamin.plan.domain.responsedto.PlanDetailResponseDto;
 import com.example.hamin.plan.model.service.PlanServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -43,5 +42,18 @@ public class PlanController {
     public ResponseEntity<?> searchMyPlan(HttpServletRequest request) {
         MyPlanResponseDto myPlanResponseDto = planService.searchMyPlan(request.getAttribute("user").toString());
         return ResponseEntity.ok(myPlanResponseDto);
+    }
+
+    @GetMapping("/detail")
+    public ResponseEntity<?> searchDetail(@RequestParam Long planId) {
+        PlanDetailResponseDto planDetailResponseDto = planService.searchPlanDetail(planId);
+        return ResponseEntity.ok(planDetailResponseDto);
+    }
+
+    @GetMapping("/chat")
+    public ResponseEntity<?> searchChat(@RequestParam Long planId) {
+        System.out.println(planId);
+        PlanChatResponseDto planChatResponseDto = planService.searchPlanChat(planId);
+        return ResponseEntity.ok(planChatResponseDto);
     }
 }

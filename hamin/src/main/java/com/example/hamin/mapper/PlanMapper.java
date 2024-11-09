@@ -1,9 +1,12 @@
 package com.example.hamin.mapper;
 
+import com.example.hamin.chat.domain.Chat;
 import com.example.hamin.detail.domain.Detail;
 import com.example.hamin.member.domain.Member;
 import com.example.hamin.plan.domain.Plan;
 import com.example.hamin.plan.domain.responsedto.MyPlanResponseDto;
+import com.example.hamin.plan.domain.responsedto.PlanChatResponseDto;
+import com.example.hamin.plan.domain.responsedto.PlanDetailResponseDto;
 import com.example.hamin.relationship.MemberPlan;
 import org.apache.ibatis.annotations.*;
 
@@ -32,13 +35,35 @@ public interface PlanMapper {
     Long findPlanByChannelId(@Param("channelId") String channelId);
 
     @Select("""
+            SELECT d.*
+            FROM detail d
+            WHERE d.plan_id = #{planId}
+            """)
+    @Results({
+            @Result(property = "dayValue", column = "day_value"),
+            @Result(property = "orderNumber", column = "order_number")
+    })
+    List<PlanDetailResponseDto.DetailDto> searchPlanDetail(@Param("planId") Long planId);
+
+    @Select("""
+            SELECT c.*
+            FROM chat c
+            WHERE c.plan_id = #{planId}
+            ORDER BY c.created_at ASC
+            """)
+    @Results({
+            @Result(property = "createdAt", column = "created_at"),
+    })
+    List<PlanChatResponseDto.ChatDto> searchPlanChat(@Param("planId") Long planId);
+
+    @Select("""
             SELECT p.*,
                    (SELECT COUNT(*)
                     FROM member_plan mp2
                     WHERE mp2.plan_id = p.id) AS participant
             FROM plan p
             JOIN member_plan mp ON p.id = mp.plan_id
-            WHERE mp.member_id = 1
+            WHERE mp.member_id = #{memberId}
             GROUP BY p.id;
             """)
     @Results({
@@ -57,6 +82,12 @@ public interface PlanMapper {
             VALUES (#{detail.addr}, #{detail.dayValue}, #{detail.orderNumber}, #{detail.name}, #{detail.x}, #{detail.y}, #{planId})
             """)
     void insertDetail(@Param("detail") Detail detail, @Param("planId") Long planId);
+
+    @Insert("""
+            INSERT INTO chat (sender, content, created_at, plan_id)
+            VALUES (#{chat.sender}, #{chat.content}, NOW(), #{planId})
+            """)
+    void insertChat(@Param("chat") Chat chat, @Param("planId") Long planId);
 
     @Delete("""
             DELETE FROM DETAIL WHERE plan_id = #{planId}

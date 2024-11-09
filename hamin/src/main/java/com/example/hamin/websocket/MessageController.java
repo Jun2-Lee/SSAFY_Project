@@ -26,12 +26,12 @@ public class MessageController {
 
         simpMessageSendingOperations.convertAndSend("/sub/channel/" + message.getChannelId(), message);
         try {
-            String jsonData = message.getData();
             String type = message.getType();
             if("plan".equals(type)) {
                 planService.changeDetails(message.getChannelId(), message.getData());
             }
-            else if("message".equals(type)) {
+            else if("chat".equals(type)) {
+                planService.insertChat(message.getChannelId(), message.getSender(), message.getData());
             }
 
         } catch (Exception e) {

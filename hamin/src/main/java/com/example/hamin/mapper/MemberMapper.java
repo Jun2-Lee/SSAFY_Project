@@ -20,6 +20,13 @@ public interface MemberMapper {
     })
     Member findByEmail(String email);
 
+    @Select("select * from member where nick_name = #{nickName}")
+    @Results({
+            @Result(property = "nickName", column = "nick_name"),
+            @Result(property = "createdAt", column = "created_at")
+    })
+    Member findByNickName(String nickName);
+
     @Update("update member set nick_name = #{nickName} where email = #{email}")
     void updateNickName(String email, String nickName);
 

@@ -44,6 +44,11 @@ public class MemberServiceImpl implements MemberService{
         mailService.sendVerificationEmail(email.trim(), createCode());
     }
 
+    @Override
+    public boolean searchByNickName(String nickName) {
+        return memberMapper.findByNickName(nickName) == null;
+    }
+
 
     private String createCode() {
         Random random = new Random();
