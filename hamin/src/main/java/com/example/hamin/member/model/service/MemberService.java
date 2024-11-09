@@ -11,4 +11,5 @@ public interface MemberService {
     Member searchByEmail(String email);
     void sendEmail(String email);
     boolean searchByNickName(String nickName);
+    void updateProfile(String email, String profile);
 }

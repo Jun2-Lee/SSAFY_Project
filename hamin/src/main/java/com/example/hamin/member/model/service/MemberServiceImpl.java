@@ -17,7 +17,7 @@ public class MemberServiceImpl implements MemberService{
     private final MailService mailService;
     @Override
     public void signUp(SignUpDto signUpDto) {
-        Member member = new Member(signUpDto.getEmail(), signUpDto.getPassword(), signUpDto.getNickName());
+        Member member = new Member(signUpDto.getEmail(), signUpDto.getPassword(), signUpDto.getNickName(), signUpDto.getProfile());
         memberMapper.signUp(member);
     }
 
@@ -47,6 +47,11 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public boolean searchByNickName(String nickName) {
         return memberMapper.findByNickName(nickName) == null;
+
+    }
+
+    public void updateProfile(String email, String profile) {
+        memberMapper.updateProfile(email, profile);
     }
 
 

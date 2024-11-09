@@ -30,7 +30,10 @@ public interface MemberMapper {
     @Update("update member set nick_name = #{nickName} where email = #{email}")
     void updateNickName(String email, String nickName);
 
-    @Insert("insert into member (email, nick_name, password, created_at) " +
-            "values (#{email}, #{nickName}, #{password}, NOW())")
+    @Insert("insert into member (email, nick_name, password, profile, created_at) " +
+            "values (#{email}, #{nickName}, #{password}, #{profile}, NOW())")
     void signUp(Member member);
+
+    @Update("update member set profile = #{profile} where email = #{email}")
+    void updateProfile(String email, String profile);
 }
